@@ -1,4 +1,4 @@
-import { FlatList, Text } from "react-native";
+import { Alert, FlatList, Text } from "react-native";
 import { useCallback, useEffect, useState } from "react";
 import { Header } from "@components/Header";
 import { Highlight } from "@components/Highlight";
@@ -8,8 +8,10 @@ import { Button } from "@components/Button";
 import { Container } from "./styles";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { groupsGetAll } from "@storage/group/groupsGetAll";
+import { Loading } from "@components/Loading";
 
 export function Groups() {
+  const [isLoading, setIsLoading] = useState(true);
   const [groups, setGroups] = useState<string[]>([
     "Galera do Rocketseat",
     "Galera do Ignite",
@@ -22,10 +24,14 @@ export function Groups() {
 
   const fetchGroups = async () => {
     try {
+      setIsLoading(true);
+
       const data = await groupsGetAll();
       setGroups(data);
     } catch (error) {
-      console.log(error);
+      Alert.alert("Turmas", "Ocorreu um erro ao buscar as turmas cadastradas.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -43,20 +49,24 @@ export function Groups() {
     <Container>
       <Header />
       <Highlight title="Turmas" subtitle="Jogue com a sua turma" />
-      <FlatList
-        data={groups}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <GroupCard title={item} onPress={() => handleOpenGroup(item)} />
-        )}
-        contentContainerStyle={groups.length === 0 && { flex: 1 }}
-        ListEmptyComponent={() => (
-          <ListEmpty message="Que tal cadastrar a primeira turma?" />
-        )}
-        showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}
-      />
-      <Button title="Criar nova Turma" onPress={handleNewGroup} />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={groups}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => (
+            <GroupCard title={item} onPress={() => handleOpenGroup(item)} />
+          )}
+          contentContainerStyle={groups.length === 0 && { flex: 1 }}
+          ListEmptyComponent={() => (
+            <ListEmpty message="Que tal cadastrar a primeira turma?" />
+          )}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+      <Button title="Criar Turma" onPress={handleNewGroup} />
     </Container>
   );
 }

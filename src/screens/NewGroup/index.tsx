@@ -15,7 +15,7 @@ export function NewGroup() {
 
   const handleNew = async () => {
     try {
-      if (group.trim().length > 0) {
+      if (group.trim().length === 0) {
         return Alert.alert("Novo Grupo", "Informe o nome do grupo.");
       }
 
@@ -39,7 +39,11 @@ export function NewGroup() {
           title="Nova turma"
           subtitle="Crie a turma para adicionar pessoas"
         />
-        <Input placeholder="Nome da turma" onChangeText={setGroup} />
+        <Input
+          placeholder="Nome da turma"
+          onChangeText={setGroup}
+          value={group}
+        />
         <Button title="Criar" style={{ marginTop: 20 }} onPress={handleNew} />
       </Content>
     </Container>
